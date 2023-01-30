@@ -169,6 +169,11 @@ screen.blit(msg,(msg_rect))
 screen.blit(scoretxt,(screen_width/2-scoretxt_width/2,screen_height/2-scoretxt_height/2))
 pygame.display.update()
 
-pygame.time.delay(2000)
-
+# 종료 부분 
+end=True
+while end:
+  for event in pygame.event.get():
+    if event.type==pygame.KEYDOWN:
+      if event.key==pygame.K_RETURN:
+        end=False
 pygame.quit()
