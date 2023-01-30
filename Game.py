@@ -30,9 +30,16 @@ shot_size = shot.get_rect().size
 shot_width = shot_size[0]
 shot_height = shot_size[1]
 
+# 탄흔 만들기
+bulletMark = pygame.image.load("images/bulletMark.png")
+bulletMark_size = bulletMark.get_rect().size
+bulletMark_width=bulletMark_size[0]
+bulletMark_height = bulletMark_size[1]
+
+
 # 시작시 에임 표시 숨기기
-shot_x_pos = -15 
-shot_y_pos = -15
+shot_x_pos = -40
+shot_y_pos = -40
 
 # 표적 만들기
 target = pygame.image.load("images/target.png")
@@ -44,6 +51,7 @@ target_height = target_size[1]
 target_x_pos = screen_width/2 - target_width/2
 target_y_pos = (screen_height- info_height)/2 - target_height/2
 
+
 # Font 정의
 game_font = pygame.font.Font(None,40)
 
@@ -53,7 +61,7 @@ scoretxt= game_font.render("Score:{}".format(score), True, (255,255,255))
 scoretxt_size=scoretxt.get_rect().size
 scoretxt_width = scoretxt_size[0]
 scoretxt_height = scoretxt_size[1]
-total_time=10
+total_time=15
 start_ticks = pygame.time.get_ticks() # 시작 시간 정의
 game_result=""
 reload = "Reload"
@@ -67,6 +75,8 @@ bullettxt = game_font.render("Bullet:{}".format(bullet),True,(255,255,255))
 bullettxt_size=bullettxt.get_rect().size
 bullettxt_width = bullettxt_size[0]
 
+#탄흔 유지
+bulletMarks=[]
 
 running = True
 while running:
@@ -86,24 +96,29 @@ while running:
         shot_y_pos=shot_pos[1]
         bullet -=1
         bullettxt = game_font.render("Bullet:{}".format(bullet),True,(255,255,255))
+        bulletMarks.append([shot_x_pos-bulletMark_width/2,shot_y_pos-bulletMark_height/2]) # 탄흔 좌표를 리스트에 저장
         if bullet <=0:
           reloadn=0
     if event.type == pygame.MOUSEBUTTONUP:
-      shot_x_pos = -15
-      shot_y_pos = -15
+      shot_x_pos = -40
+      shot_y_pos = -40
     
     if event.type == pygame.KEYDOWN:
       if event.key ==pygame.K_r:
         reloadn = -1
   
   # 충돌 처리
+  '''
   shot_rect=shot.get_rect()
   shot_rect.left=shot_x_pos-shot_width/2
   shot_rect.top=shot_y_pos-shot_height/2
-
   target_rect=target.get_rect()
   target_rect.left=target_x_pos
   target_rect.top=target_y_pos
+  '''
+  # 그림 이미지보다 충돌범위를 적게 함
+  shot_rect = pygame.Rect(shot_x_pos-1,shot_y_pos-1,2,2)
+  target_rect = pygame.Rect(target_x_pos+20, target_y_pos+20,10,10)
 
   if shot_rect.colliderect(target_rect):
     target_x_pos=random.randint(0,screen_width-target_width)
@@ -124,6 +139,8 @@ while running:
   # 5. 화면에 그리기
   screen.blit(background,(0,0))
   screen.blit(info,(0,screen_height-info_height))
+  for bulletMark_x_pos, bulletMark_y_pos in bulletMarks:  # 리스트에 저장된 탄흔 좌표를 출력
+    screen.blit(bulletMark,(bulletMark_x_pos, bulletMark_y_pos))
   screen.blit(shot,(shot_x_pos-shot_width/2,shot_y_pos-shot_height/2))
   screen.blit(target,(target_x_pos,target_y_pos))
   screen.blit(timer,(screen_width/2 - timer_width/2,700))
@@ -143,6 +160,7 @@ while running:
     reloadMsg = game_font.render(reload,True,(255,255,255))
     screen.blit(reloadMsg,(-100,-100))
     reloadn=-2
+
   pygame.display.update()
 
 msg = game_font.render(game_result,True,(255,255,255))
