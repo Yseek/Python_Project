@@ -61,7 +61,7 @@ scoretxt= game_font.render("Score:{}".format(score), True, (255,255,255))
 scoretxt_size=scoretxt.get_rect().size
 scoretxt_width = scoretxt_size[0]
 scoretxt_height = scoretxt_size[1]
-total_time=15
+total_time=1
 start_ticks = pygame.time.get_ticks() # 시작 시간 정의
 game_result=""
 reload = "Reload"
@@ -170,6 +170,13 @@ screen.blit(scoretxt,(screen_width/2-scoretxt_width/2,screen_height/2-scoretxt_h
 pygame.display.update()
 
 # 종료 부분 
+endmsg = "Press Enter to Exit"
+endmsgtxt = game_font.render(endmsg,True,(255,255,255))
+endmsgtxt_size=endmsgtxt.get_rect().size
+endmsgtxt_width=endmsgtxt_size[0]
+screen.blit(endmsgtxt,(screen_width/2-endmsgtxt_width/2,screen_height/4))
+pygame.display.update()
+
 end=True
 while end:
   for event in pygame.event.get():
