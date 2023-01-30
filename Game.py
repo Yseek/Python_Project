@@ -79,6 +79,10 @@ def game():
   #탄흔 유지
   bulletMarks=[]
 
+  # 피버 카운트
+  hits=[]
+  hit=0
+
   # 커서 변경
   pygame.mouse.set_visible(False)
   cursor_Img = pygame.image.load("images/cursor.png")
@@ -101,6 +105,7 @@ def game():
         pass
       else:
         if event.type == pygame.MOUSEBUTTONDOWN:
+          hit=-1 # 격발 함
           shot_pos=pygame.mouse.get_pos()
           shot_x_pos=shot_pos[0]
           shot_y_pos=shot_pos[1]
@@ -139,12 +144,23 @@ def game():
     shot_rect = pygame.Rect(shot_x_pos-1,shot_y_pos-1,2,2)
     target_rect = pygame.Rect(target_x_pos+15, target_y_pos+15,20,20)
 
-    if shot_rect.colliderect(target_rect):
-      target_x_pos=random.randint(0,screen_width-target_width)
-      target_y_pos=random.randint(0,screen_height-info_height-target_height)
-      score +=1
-      scoretxt= game_font.render("Score:{}".format(score), True, (255,255,255))
-
+    # 연속으로 5번 맞추면 피버타임
+    if hit==-1:
+      if shot_rect.colliderect(target_rect):
+        target_x_pos=random.randint(0,screen_width-target_width)
+        target_y_pos=random.randint(0,screen_height-info_height-target_height)
+        score +=1
+        scoretxt= game_font.render("Score:{}".format(score), True, (255,255,255))
+        hit=1 # 격발이 끝났음을 알림
+        hits.append([1])
+        if len(hits)>=5:
+          print("fever")
+          hits.clear()
+      else:
+        hit=1 
+        hits.clear()
+      
+    
     # 경과 시간 계산
     elapsed_time = (pygame.time.get_ticks()- start_ticks)/1000
     timer = game_font.render("Time: {}".format(int(total_time-elapsed_time)),True,(255,255,255))
