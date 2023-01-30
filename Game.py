@@ -90,7 +90,7 @@ def game():
 
   running = True
   while running:
-    dt = clock.tick(60)
+    dt = clock.tick(144) # fps 게임 최적 프레임 
 
     # 2. 이벤트 처리(키보드, 마우스 등)
     for event in pygame.event.get():
@@ -104,6 +104,8 @@ def game():
           shot_pos=pygame.mouse.get_pos()
           shot_x_pos=shot_pos[0]
           shot_y_pos=shot_pos[1]
+          if shot_y_pos > screen_height-info_height:
+            shot_y_pos = screen_height-info_height
           bullet -=1
           bullettxt = game_font.render("Bullet:{}".format(bullet),True,(255,255,255))
           bulletMarks.append([shot_x_pos-bulletMark_width/2,shot_y_pos-bulletMark_height/2]) # 탄흔 좌표를 리스트에 저장
@@ -121,6 +123,8 @@ def game():
         cursor_pos=pygame.mouse.get_pos()
         cursor_x_pos = cursor_pos[0]
         cursor_y_pos = cursor_pos[1]
+        if cursor_y_pos > screen_height-info_height:
+          cursor_y_pos = screen_height-info_height
 
     # 충돌 처리
     '''
@@ -133,7 +137,7 @@ def game():
     '''
     # 그림 이미지보다 충돌범위를 적게 함
     shot_rect = pygame.Rect(shot_x_pos-1,shot_y_pos-1,2,2)
-    target_rect = pygame.Rect(target_x_pos+20, target_y_pos+20,10,10)
+    target_rect = pygame.Rect(target_x_pos+15, target_y_pos+15,20,20)
 
     if shot_rect.colliderect(target_rect):
       target_x_pos=random.randint(0,screen_width-target_width)
@@ -153,9 +157,9 @@ def game():
       
     # 5. 화면에 그리기
     screen.blit(background,(0,0))
-    screen.blit(info,(0,screen_height-info_height))
     for bulletMark_x_pos, bulletMark_y_pos in bulletMarks:  # 리스트에 저장된 탄흔 좌표를 출력
       screen.blit(bulletMark,(bulletMark_x_pos, bulletMark_y_pos))
+    screen.blit(info,(0,screen_height-info_height))
     screen.blit(shot,(shot_x_pos-shot_width/2,shot_y_pos-shot_height/2))
     screen.blit(target,(target_x_pos,target_y_pos))
     screen.blit(timer,(screen_width/2 - timer_width/2,700))
