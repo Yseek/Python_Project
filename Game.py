@@ -20,7 +20,7 @@ def game():
 
   # 배경 만들기
   background = pygame.image.load("images/background.png")
-
+  backfever = pygame.image.load("images/fever.png")
   info = pygame.image.load("images/info.png")
   info_size = info.get_rect().size
   info_height = info_size[1]
@@ -82,6 +82,16 @@ def game():
   # 피버 카운트
   hits=[]
   hit=0
+  
+  # 피버 fever 가 0이면 일반, 1이면 fever 상태
+  fever=0
+  fever_time_start=0
+  fever_time=0
+  feverM="FEVER TIME"
+  feverMsg=game_font.render(feverM,True,(255,255,0))
+  feverMsg_size = feverMsg.get_rect().size
+  feverMsg_width = feverMsg_size[0]
+  feverMsg_height = feverMsg_size[1]
 
   # 커서 변경
   pygame.mouse.set_visible(False)
@@ -94,7 +104,7 @@ def game():
 
   running = True
   while running:
-    dt = clock.tick(144) # fps 게임 최적 프레임 
+    dt = clock.tick(288) # 프레임 
 
     # 2. 이벤트 처리(키보드, 마우스 등)
     for event in pygame.event.get():
@@ -111,7 +121,10 @@ def game():
           shot_y_pos=shot_pos[1]
           if shot_y_pos > screen_height-info_height:
             shot_y_pos = screen_height-info_height
-          bullet -=1
+          if fever==0:
+            bullet -=1
+          else:
+            bullet=8
           bullettxt = game_font.render("Bullet:{}".format(bullet),True,(255,255,255))
           bulletMarks.append([shot_x_pos-bulletMark_width/2,shot_y_pos-bulletMark_height/2]) # 탄흔 좌표를 리스트에 저장
           if bullet <=0:
@@ -154,12 +167,19 @@ def game():
         hit=1 # 격발이 끝났음을 알림
         hits.append([1])
         if len(hits)>=5:
-          print("fever")
+          fever=1
+          fever_time_start=pygame.time.get_ticks()  # 피버가 시작된 시간 
           hits.clear()
       else:
         hit=1 
         hits.clear()
-      
+    if fever==1:
+      fever_time= (pygame.time.get_ticks() -fever_time_start) / 1000 # 피버 시간 재기
+      hits.clear() # 10초 동안은 연속 적중 카운트 안 함
+      if fever_time> 10: # 10초동안만 지속  
+        fever=0
+
+
     
     # 경과 시간 계산
     elapsed_time = (pygame.time.get_ticks()- start_ticks)/1000
@@ -173,6 +193,9 @@ def game():
       
     # 5. 화면에 그리기
     screen.blit(background,(0,0))
+    if fever ==1:
+      screen.blit(backfever,(0,0))
+      screen.blit(feverMsg,(screen_width/2-feverMsg_width/2,scoretxt_height))
     for bulletMark_x_pos, bulletMark_y_pos in bulletMarks:  # 리스트에 저장된 탄흔 좌표를 출력
       screen.blit(bulletMark,(bulletMark_x_pos, bulletMark_y_pos))
     screen.blit(info,(0,screen_height-info_height))
@@ -185,7 +208,7 @@ def game():
     if reloadn==0:
       screen.blit(reloadMsg,(screen_width/2-reloadMsg_width/2,reloadMsg_height))
     elif reloadn==-1:
-      reload="Reloading.."
+      reload="Reloading..."
       reloadMsg = game_font.render(reload,True,(255,255,255))
       screen.blit(reloadMsg,(screen_width/2-reloadMsg_width/2,reloadMsg_height))
       pygame.display.update()
