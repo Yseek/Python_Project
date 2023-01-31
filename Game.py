@@ -8,7 +8,7 @@ def game():
   # 화면 크기 설정
   screen_width = 1024
   screen_height = 768
-  screen = pygame.display.set_mode((screen_width,screen_height))
+  screen = pygame.display.set_mode((screen_width,screen_height),pygame.FULLSCREEN)
 
   # 화면 타이틀 설정
   pygame.display.set_caption("Aim Practice")
@@ -24,6 +24,7 @@ def game():
   info = pygame.image.load("images/info.png")
   info_size = info.get_rect().size
   info_height = info_size[1]
+  backfever.set_alpha(128) # 배경 투명도 설정
 
   # 격발 만들기
   shot = pygame.image.load("images/shot.png")
@@ -91,7 +92,7 @@ def game():
   feverMsg=game_font.render(feverM,True,(255,255,0))
   feverMsg_size = feverMsg.get_rect().size
   feverMsg_width = feverMsg_size[0]
-  feverMsg_height = feverMsg_size[1]
+  #feverMsg_height = feverMsg_size[1]
 
   # 커서 변경
   pygame.mouse.set_visible(False)
@@ -104,7 +105,7 @@ def game():
 
   running = True
   while running:
-    dt = clock.tick(288) # 프레임 
+    dt = clock.tick(144) # 프레임 
 
     # 2. 이벤트 처리(키보드, 마우스 등)
     for event in pygame.event.get():
@@ -190,6 +191,8 @@ def game():
     if total_time-elapsed_time <=0:
       game_result ="END"
       running = False
+      global end
+      end=True
       
     # 5. 화면에 그리기
     screen.blit(background,(0,0))
@@ -241,9 +244,60 @@ def game():
   screen.blit(restarttxt,(screen_width/2-restarttxt_width/2,screen_height/4+40))
   pygame.display.update()
 
-game()
 
-end=True
+def start():
+  # 시작 화면 크기 , 타이틀 설정
+  screen_width = 800
+  screen_height = 600
+  screen = pygame.display.set_mode((screen_width,screen_height))
+  pygame.display.set_caption("입장")
+
+  #시작 화면 배경 이미지
+  startBackground = pygame.image.load("images/startBackground.jpg")
+
+  #스타트 버튼 이미지
+  startbtn = pygame.image.load("images\\start.png")
+  startbtnhover= pygame.image.load("images\\starthover.png")
+  startbtn_size = startbtn.get_rect().size
+  startbtn_width= startbtn_size[0]
+  startbtn_hegith = startbtn_size[1]
+
+  # 스타트 버튼 범위 확인
+  startbtn_x_pos= screen_width/2-startbtn_width/2
+  startbtn_y_pos = screen_height/2-startbtn_hegith/2
+  startbtn_rect=pygame.Rect(startbtn_x_pos,startbtn_y_pos+30,150,60)
+
+  # 배경 이미지 그리기
+  screen.blit(startBackground,(0,0))
+  screen.blit(startbtn,(screen_width/2-startbtn_width/2,screen_height/2-startbtn_hegith/2))
+  pygame.display.update()
+
+
+  running= True
+  while running:
+    for event in pygame.event.get():
+      if event.type == pygame.MOUSEMOTION:
+        mouse_pos=pygame.mouse.get_pos()
+        mouse_rect=pygame.Rect(mouse_pos[0],mouse_pos[1],1,1)
+        if mouse_rect.colliderect(startbtn_rect):  
+          screen.blit(startbtnhover,(screen_width/2-startbtn_width/2,screen_height/2-startbtn_hegith/2))
+          pygame.display.update()
+        else:
+          screen.blit(startbtn,(screen_width/2-startbtn_width/2,screen_height/2-startbtn_hegith/2))
+          pygame.display.update()
+      if event.type == pygame.MOUSEBUTTONDOWN:
+        mouse_pos=pygame.mouse.get_pos()
+        mouse_rect=pygame.Rect(mouse_pos[0],mouse_pos[1],1,1)
+        if mouse_rect.colliderect(startbtn_rect):  
+          game()
+          running=False
+      if event.type==pygame.QUIT:
+        running= False
+        global end
+        end=False
+
+start()
+
 while end:
   for event in pygame.event.get():
     if event.type==pygame.KEYDOWN:
@@ -252,3 +306,5 @@ while end:
       if event.key==pygame.K_SPACE:
         game()
 pygame.quit()
+
+
