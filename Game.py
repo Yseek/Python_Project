@@ -111,7 +111,7 @@ def game():
 
   running = True
   while running:
-    dt = clock.tick(144) # 프레임 
+    dt = clock.tick(60) # 프레임 
 
     # 2. 이벤트 처리(키보드, 마우스 등)
     for event in pygame.event.get():
@@ -189,6 +189,8 @@ def game():
         hits.append([1])
         if len(hits)>=5:
           fever=1
+          reloadn=-2
+          bullet=8
           fever_time_start=pygame.time.get_ticks()  # 피버가 시작된 시간 
           hits.clear()
       else:
