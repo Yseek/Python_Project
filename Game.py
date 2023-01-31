@@ -2,13 +2,15 @@ import pygame
 import random
 
 pygame.init()
+end=False
 
 def game():
+
   # 화면 크기 설정
   screen_width = 1024
   screen_height = 768
-  screen = pygame.display.set_mode((screen_width,screen_height)) # 테스트용 
-  #screen = pygame.display.set_mode((screen_width,screen_height),pygame.FULLSCREEN)
+  #screen = pygame.display.set_mode((screen_width,screen_height)) # 테스트용 
+  screen = pygame.display.set_mode((screen_width,screen_height),pygame.FULLSCREEN)
 
   # 화면 타이틀 설정
   pygame.display.set_caption("Aim Practice")
@@ -84,6 +86,7 @@ def game():
   # 피버 카운트
   hits=[]
   hit=0
+  hits_txt= game_font.render(str(len(hits)),True ,(255,255,0))
   
   # 피버 fever 가 0이면 일반, 1이면 fever 상태
   fever=0
@@ -108,6 +111,9 @@ def game():
   pause =True
   pause_time = 0
   pause_time_sum = 0
+
+  # 임팩트 이미지
+  impact = pygame.image.load("images/impact.png")
 
   running = True
   while running:
@@ -156,7 +162,6 @@ def game():
                   pause =False  
           pause=True
 
-
       if event.type == pygame.MOUSEMOTION:  # 조준점이 정보창 위로 올라가지 못하게 함
         cursor_pos=pygame.mouse.get_pos()
         cursor_x_pos = cursor_pos[0]
@@ -187,6 +192,7 @@ def game():
         scoretxt= game_font.render("Score:{}".format(score), True, (255,255,255))
         hit=1 # 격발이 끝났음을 알림
         hits.append([1])
+        hits_txt= game_font.render("FEVER 5/{}".format(str(len(hits))),True ,(255,255,0))
         if len(hits)>=5:
           fever=1
           reloadn=-2
@@ -216,11 +222,11 @@ def game():
       
     # 5. 화면에 그리기
     screen.blit(background,(0,0))
+    for bulletMark_x_pos, bulletMark_y_pos in bulletMarks:  # 리스트에 저장된 탄흔 좌표를 출력
+      screen.blit(bulletMark,(bulletMark_x_pos, bulletMark_y_pos))
     if fever ==1:
       screen.blit(backfever,(0,0))
       screen.blit(feverMsg,(screen_width/2-feverMsg_width/2,scoretxt_height))
-    for bulletMark_x_pos, bulletMark_y_pos in bulletMarks:  # 리스트에 저장된 탄흔 좌표를 출력
-      screen.blit(bulletMark,(bulletMark_x_pos, bulletMark_y_pos))
     screen.blit(info,(0,screen_height-info_height))
     screen.blit(shot,(shot_x_pos-shot_width/2,shot_y_pos-shot_height/2))
     screen.blit(target,(target_x_pos,target_y_pos))
@@ -228,6 +234,9 @@ def game():
     screen.blit(scoretxt,(screen_width/6,700))
     screen.blit(bullettxt,(screen_width/1.6+bullettxt_width,700))
     screen.blit(cursor_Img,(cursor_x_pos-cursor_img_width/2,cursor_y_pos-cursor_img_height/2))
+    if len(hits) !=0 & len(hits)<5:   # 피버 카운트가 진행 될 때만 출력
+      screen.blit(hits_txt,(screen_width/2+330,200))
+      screen.blit(impact,(screen_width/2+230,80))
     if reloadn==0:
       screen.blit(reloadMsg,(screen_width/2-reloadMsg_width/2,reloadMsg_height))
     elif reloadn==-1:
