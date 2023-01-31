@@ -1,13 +1,13 @@
 import pygame
 import random
 
-
 pygame.init()
 
 def game():
   # 화면 크기 설정
   screen_width = 1024
   screen_height = 768
+  #screen = pygame.display.set_mode((screen_width,screen_height)) # 테스트용 
   screen = pygame.display.set_mode((screen_width,screen_height),pygame.FULLSCREEN)
 
   # 화면 타이틀 설정
@@ -103,6 +103,11 @@ def game():
   cursor_x_pos=-100
   cursor_y_pos=-100
 
+  # 일시정지
+  pause =True
+  pause_time = 0
+  pause_time_sum = 0
+
   running = True
   while running:
     dt = clock.tick(144) # 프레임 
@@ -137,13 +142,25 @@ def game():
       if event.type == pygame.KEYDOWN:
         if event.key ==pygame.K_r:
           reloadn = -1
+        if event.key == pygame.K_F1:   # F1 누르고 있을시 일시정지
+          pause_start=pygame.time.get_ticks()
+          while pause:   
+            for event in pygame.event.get():
+              if event.type == pygame.KEYUP:   # F1 누르고 있지 않을시 일시정지 해제
+                if event.key == pygame.K_F1:
+                  pause_time = (pygame.time.get_ticks()-pause_start)/1000  # 개별 일시정지한 시간 
+                  pause_time_sum += pause_time  # 총 일시정지한 시간,  모든 타이머에 빼줘야할 값 (일시정지 한 만큼 현재 시간은 계속 흘렀기 때문)
+                  pause =False  
+          pause=True
 
-      if event.type == pygame.MOUSEMOTION:
+
+      if event.type == pygame.MOUSEMOTION:  # 조준점이 정보창 위로 올라가지 못하게 함
         cursor_pos=pygame.mouse.get_pos()
         cursor_x_pos = cursor_pos[0]
         cursor_y_pos = cursor_pos[1]
         if cursor_y_pos > screen_height-info_height:
           cursor_y_pos = screen_height-info_height
+
 
     # 충돌 처리
     '''
@@ -175,15 +192,13 @@ def game():
         hit=1 
         hits.clear()
     if fever==1:
-      fever_time= (pygame.time.get_ticks() -fever_time_start) / 1000 # 피버 시간 재기
+      fever_time= (pygame.time.get_ticks() -fever_time_start) / 1000 - pause_time_sum  # 피버 시간 재기
       hits.clear() # 10초 동안은 연속 적중 카운트 안 함
       if fever_time> 10: # 10초동안만 지속  
         fever=0
-
-
     
     # 경과 시간 계산
-    elapsed_time = (pygame.time.get_ticks()- start_ticks)/1000
+    elapsed_time = (pygame.time.get_ticks()- start_ticks)/1000-pause_time_sum
     timer = game_font.render("Time: {}".format(int(total_time-elapsed_time)),True,(255,255,255))
     timer_size=timer.get_rect().size
     timer_width=timer_size[0]
@@ -276,13 +291,13 @@ def start():
   running= True
   while running:
     for event in pygame.event.get():
-      if event.type == pygame.MOUSEMOTION:
+      if event.type == pygame.MOUSEMOTION:  # 마우스가 움직일 때마다 좌표 계산
         mouse_pos=pygame.mouse.get_pos()
         mouse_rect=pygame.Rect(mouse_pos[0],mouse_pos[1],1,1)
-        if mouse_rect.colliderect(startbtn_rect):  
+        if mouse_rect.colliderect(startbtn_rect):      # 마우스가 버튼 위에 호버링 되면 버튼 색상 변경
           screen.blit(startbtnhover,(screen_width/2-startbtn_width/2,screen_height/2-startbtn_hegith/2))
           pygame.display.update()
-        else:
+        else:                                          # 마우스가 버튼 위에 없을 때 원래 버튼으로 색상 변경
           screen.blit(startbtn,(screen_width/2-startbtn_width/2,screen_height/2-startbtn_hegith/2))
           pygame.display.update()
       if event.type == pygame.MOUSEBUTTONDOWN:
