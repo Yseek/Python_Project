@@ -7,8 +7,8 @@ def game():
   # 화면 크기 설정
   screen_width = 1024
   screen_height = 768
-  #screen = pygame.display.set_mode((screen_width,screen_height)) # 테스트용 
-  screen = pygame.display.set_mode((screen_width,screen_height),pygame.FULLSCREEN)
+  screen = pygame.display.set_mode((screen_width,screen_height)) # 테스트용 
+  #screen = pygame.display.set_mode((screen_width,screen_height),pygame.FULLSCREEN)
 
   # 화면 타이틀 설정
   pygame.display.set_caption("Aim Practice")
@@ -25,6 +25,7 @@ def game():
   info_size = info.get_rect().size
   info_height = info_size[1]
   backfever.set_alpha(128) # 배경 투명도 설정
+  help = pygame.image.load("images/help.png")
 
   # 격발 만들기
   shot = pygame.image.load("images/shot.png")
@@ -144,6 +145,8 @@ def game():
           reloadn = -1
         if event.key == pygame.K_F1:   # F1 누르고 있을시 일시정지
           pause_start=pygame.time.get_ticks()
+          screen.blit(help,(0,0))  # F1 도움말 화면
+          pygame.display.update()
           while pause:   
             for event in pygame.event.get():
               if event.type == pygame.KEYUP:   # F1 누르고 있지 않을시 일시정지 해제
@@ -194,7 +197,7 @@ def game():
     if fever==1:
       fever_time= (pygame.time.get_ticks() -fever_time_start) / 1000 - pause_time_sum  # 피버 시간 재기
       hits.clear() # 10초 동안은 연속 적중 카운트 안 함
-      if fever_time> 10: # 10초동안만 지속  
+      if fever_time> 5: # 5초동안만 지속  
         fever=0
     
     # 경과 시간 계산
