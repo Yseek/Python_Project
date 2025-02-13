@@ -9,8 +9,7 @@ def game():
   # 화면 크기 설정
   screen_width = 1024
   screen_height = 768
-  #screen = pygame.display.set_mode((screen_width,screen_height)) # 테스트용 
-  screen = pygame.display.set_mode((screen_width,screen_height),pygame.FULLSCREEN)
+  screen = pygame.display.set_mode((screen_width,screen_height))
 
   # 화면 타이틀 설정
   pygame.display.set_caption("Aim Practice")
